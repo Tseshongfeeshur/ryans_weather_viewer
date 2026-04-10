@@ -199,11 +199,13 @@ class WeatherCard extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
                               padding: EdgeInsets.only(bottom: 6),
                               child: Text(
                                 item.position,
+                                maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w500,
@@ -215,6 +217,7 @@ class WeatherCard extends StatelessWidget {
                               padding: EdgeInsets.only(bottom: 4),
                               child: Text(
                                 getWeatherDescription(item.weather.code),
+                                maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -225,6 +228,7 @@ class WeatherCard extends StatelessWidget {
                             ),
                             Text(
                               '${item.weather.maxTemp}° ${item.weather.minTemp}°',
+                              maxLines: 1,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -235,7 +239,6 @@ class WeatherCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Spacer(), // 撑开空间
                       Padding(
                         padding: EdgeInsets.only(right: 6),
                         child: Text(
