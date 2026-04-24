@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  geolocator_windows
+  rive_native
   system_theme
 )
 
