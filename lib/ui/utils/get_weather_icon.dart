@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// 把天气代码变成图标（临时，后续用 LottieFiles 代替）
+/// 把天气代码变成图标（临时，后续用 LottieFiles 代替）
 IconData getWeatherIcon(int wmoCode) {
   const Map<int, IconData> weatherIcons = {
     0: Icons.wb_sunny, // 晴天

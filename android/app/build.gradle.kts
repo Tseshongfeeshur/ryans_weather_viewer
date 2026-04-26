@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ryans_weather_viewer"
+    namespace = "top.ryanyuan.weatherviewer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

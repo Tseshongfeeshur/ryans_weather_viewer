@@ -1,4 +1,4 @@
-// 把天气代码变成文字描述
+/// 把天气代码变成文字描述
 String getWeatherDesc(int wmoCode) {
   const Map<int, String> weatherDescriptions = {
     0: '晴天',

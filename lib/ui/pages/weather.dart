@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 // 工具
 import 'package:ryans_weather_viewer/ui/utils/get_date_from_period.dart';
@@ -6,7 +7,7 @@ import 'package:ryans_weather_viewer/ui/utils/get_date_from_period.dart';
 // 插件
 import 'package:reorderable_staggered_scroll_view/reorderable_staggered_scroll_view.dart';
 
-// 最上面天气概览
+/// 最上面天气概览
 class _WeatherOverview extends StatelessWidget {
   final Icon icon;
   final String desc;
@@ -73,7 +74,7 @@ class _WeatherOverview extends StatelessWidget {
   }
 }
 
-// 卡套
+/// 卡套
 class _DetailCard extends StatelessWidget {
   final Widget child;
 
@@ -93,7 +94,7 @@ class _DetailCard extends StatelessWidget {
   }
 }
 
-// 普通信息展示卡
+/// 普通信息展示卡
 class _StaticWeatherCard extends StatelessWidget {
   final Icon icon;
   final String title;
@@ -133,8 +134,8 @@ class _StaticWeatherCard extends StatelessWidget {
   }
 }
 
-// 横向滚动信息展示卡
-class _ScrollableWeatherCard extends StatelessWidget {
+/// 横向滚动信息展示卡
+class _ScrollableWeatherCard extends StatefulWidget {
   final Icon icon;
   final String title;
   final double innerHeight;
@@ -146,6 +147,37 @@ class _ScrollableWeatherCard extends StatelessWidget {
     this.innerHeight = 100,
     required this.children,
   });
+
+  @override
+  State<_ScrollableWeatherCard> createState() => _ScrollableWeatherCardState();
+}
+
+class _ScrollableWeatherCardState extends State<_ScrollableWeatherCard> {
+  late ScrollController _controller;
+  double _listWidth = 0;
+  bool _atStart = true;
+  bool _atEnd = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+    _controller.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onScroll);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      _atStart = _controller.offset <= 0;
+      _atEnd = _controller.offset >= _controller.position.maxScrollExtent - 1;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,9 +193,12 @@ class _ScrollableWeatherCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    Padding(padding: EdgeInsets.only(right: 8), child: icon),
+                    Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: widget.icon,
+                    ),
                     Text(
-                      title,
+                      widget.title,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight(450),
@@ -172,19 +207,29 @@ class _ScrollableWeatherCard extends StatelessWidget {
                     Spacer(),
                     InkWell(
                       borderRadius: BorderRadius.circular(999),
-                      onTap: () {},
+                      onTap: _atStart
+                          ? null
+                          : () {
+                              _controller.animateTo(
+                                _controller.offset - _listWidth + 36,
+                                duration: 200.ms,
+                                curve: Curves.easeOut,
+                              );
+                            },
                       child: Ink(
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.secondaryContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .withValues(alpha: _atStart ? 0.3 : 1),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Icon(
                             Icons.arrow_left,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).colorScheme.secondary
+                                .withValues(alpha: _atStart ? 0.3 : 1),
                           ),
                         ),
                       ),
@@ -192,19 +237,29 @@ class _ScrollableWeatherCard extends StatelessWidget {
                     SizedBox(width: 16),
                     InkWell(
                       borderRadius: BorderRadius.circular(999),
-                      onTap: () {},
+                      onTap: _atEnd
+                          ? null
+                          : () {
+                              _controller.animateTo(
+                                _controller.offset + _listWidth - 36,
+                                duration: 200.ms,
+                                curve: Curves.easeOut,
+                              );
+                            },
                       child: Ink(
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.secondaryContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .withValues(alpha: _atEnd ? 0.3 : 1),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Icon(
                             Icons.arrow_right,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).colorScheme.secondary
+                                .withValues(alpha: _atEnd ? 0.3 : 1),
                           ),
                         ),
                       ),
@@ -214,11 +269,17 @@ class _ScrollableWeatherCard extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: innerHeight,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                children: children,
+              height: widget.innerHeight,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _listWidth = constraints.maxWidth;
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    scrollDirection: Axis.horizontal,
+                    controller: _controller,
+                    children: widget.children,
+                  );
+                },
               ),
             ),
           ],
@@ -228,7 +289,7 @@ class _ScrollableWeatherCard extends StatelessWidget {
   }
 }
 
-// 每小时天气预报滚动卡里面的磁贴
+/// 每小时天气预报滚动卡里面的磁贴
 class _WeatherPerHourTile extends StatelessWidget {
   final int temp;
   final Icon icon;
@@ -260,7 +321,7 @@ class _WeatherPerHourTile extends StatelessWidget {
   }
 }
 
-// 未来 10 天天气预报滚动卡里面的磁贴
+/// 未来 10 天天气预报滚动卡里面的磁贴
 class _WeatherFutureDayTile extends StatelessWidget {
   final int topTemp;
   final int bottomTemp;
@@ -341,11 +402,11 @@ class _WeatherFutureDayTile extends StatelessWidget {
   }
 }
 
-// 小卡片
+/// 小卡片
 // class _RainfallMiniCard extends StatelessWidget {
 // }
 
-// 天气页
+/// 天气页
 class Weather extends StatelessWidget {
   const Weather({super.key});
 
@@ -399,7 +460,7 @@ class Weather extends StatelessWidget {
               title: '每小时天气预报',
               innerHeight: 120,
               children: List.generate(
-                24,
+                14,
                 (index) => _WeatherPerHourTile(
                   temp: 16 + index,
                   icon: Icon(Icons.cloud_outlined),

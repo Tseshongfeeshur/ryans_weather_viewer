@@ -1,4 +1,4 @@
-package com.example.ryans_weather_viewer
+package top.ryanyuan.weatherviewer
 
 import io.flutter.embedding.android.FlutterActivity
 

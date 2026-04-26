@@ -1,4 +1,4 @@
-// 根据剩余天数计算目标日期
+/// 根据剩余天数计算目标日期
 ({String weekday, String date}) getDateFromPeriod(int daysFromNow) {
   DateTime now = DateTime.now();
 

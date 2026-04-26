@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 // 工具
 import 'package:ryans_weather_viewer/ui/utils/get_weather_desc.dart';
 import 'package:ryans_weather_viewer/ui/utils/get_weather_icon.dart';
+import 'package:ryans_weather_viewer/data/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 // 页面
 import 'package:ryans_weather_viewer/ui/pages/settings.dart';
@@ -11,7 +13,7 @@ import 'package:ryans_weather_viewer/ui/pages/search.dart';
 import 'package:ryans_weather_viewer/ui/pages/weather.dart';
 import 'package:ryans_weather_viewer/ui/test/color_scheme.dart';
 
-// 一单位 天气 的数据结构
+/// 一单位 天气 的数据结构
 class _WeatherData {
   final int code;
   final int currentTemp;
@@ -26,7 +28,7 @@ class _WeatherData {
   });
 }
 
-// 一单位 天气预览卡信息 的数据结构
+/// 一单位 天气预览卡信息 的数据结构
 class _WeatherCardInfo {
   final String position;
   final _WeatherData weather;
@@ -34,7 +36,217 @@ class _WeatherCardInfo {
   _WeatherCardInfo(this.position, this.weather);
 }
 
-// 天气预览卡
+/// 位置服务权限请求卡
+class _RequirePositionAccessCard extends StatelessWidget {
+  /// 显示用于请求权限的底部弹出栏
+  Future<dynamic> showPositionAccessRequireBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 26,
+            bottom: 48,
+            left: 24,
+            right: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 26),
+                child: Text('获取最新天气信息', style: TextStyle(fontSize: 24)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '如需接收您当前所在位置的最新天气资讯，请允许“Ryan\'s Weather Viewer”应用访问精确位置信息。',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight(380),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      '“Ryan\'s Weather Viewer”应用会收集位置数据，以便在应用关闭或不使用时也能提供本地实时天气预报。',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight(380),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Text('取消'),
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: () async {
+                      final int code = await getPositionAccess();
+                      if (!context.mounted) return;
+                      final shouldCheckAccessAgainToUpdateState =
+                          await showNextPositionAccessRequireDialog(
+                            context,
+                            code,
+                          );
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                      if (shouldCheckAccessAgainToUpdateState == true) {
+                        getPositionAccess();
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Text('继续'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<bool?> showNextPositionAccessRequireDialog(
+    BuildContext context,
+    int code,
+  ) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 24,
+              left: 24,
+              right: 24,
+              bottom: 12,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Icon(
+                          Icons.location_on_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '需要位置信息访问权限',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    '如需获取您当前所在位置的天气预报，请将位置信息权限更新为“始终允许”和“使用精确位置”',
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontWeight: FontWeight(350),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                      child: Text("取消"),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        Navigator.pop(context, true);
+                        if (code == 1) {
+                          await Geolocator.openLocationSettings();
+                        } else if (code == 2) {
+                          getPositionAccess();
+                        } else if (code == 3) {
+                          await Geolocator.openAppSettings();
+                        } else {
+                          await Geolocator.openAppSettings();
+                        }
+                      },
+                      child: Text("更新权限"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        elevation: 0,
+        color: Theme.of(context).colorScheme.primaryContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        child: InkWell(
+          onTap: () {
+            showPositionAccessRequireBottomSheet(context);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.my_location,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                SizedBox(width: 24),
+                Text(
+                  '更新位置信息权限',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight(450),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 天气预览卡
 class _WeatherCard extends StatelessWidget {
   final _WeatherCardInfo item;
   final void Function(DismissDirection direction)? onDismissed;
@@ -90,8 +302,8 @@ class _WeatherCard extends StatelessWidget {
                   ? colorScheme.tertiaryContainer
                   : colorScheme.surfaceContainerHigh,
               elevation: isDragging ? 2.4 : 0.0,
-              // 让圆角同时切除内容，不过暂时不用了，好像有一定性能开销
-              // clipBehavior: Clip.antiAlias,
+              // 让圆角同时切除内容，好像有一定性能开销？
+              clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),
@@ -196,7 +408,7 @@ class _WeatherCard extends StatelessWidget {
   }
 }
 
-// 小标题
+/// 小标题
 class ListSubtitle extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -221,7 +433,7 @@ class ListSubtitle extends StatelessWidget {
   }
 }
 
-// 主页
+/// 主页
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -293,15 +505,21 @@ class _HomeState extends State<Home> {
             child: ListSubtitle(icon: Icons.my_location, text: '当前位置'),
           ),
           SliverToBoxAdapter(
-            child: _WeatherCard(
-              item: _dataCurrent,
-              isDragging: false,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Weather()),
-                );
-              },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _WeatherCard(
+                  item: _dataCurrent,
+                  isDragging: false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Weather()),
+                    );
+                  },
+                ),
+                _RequirePositionAccessCard(),
+              ],
             ),
           ),
           SliverToBoxAdapter(
