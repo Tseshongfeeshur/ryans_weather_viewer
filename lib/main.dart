@@ -5,7 +5,7 @@ import 'package:system_theme/system_theme.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 // 页面
-import 'package:ryans_weather_viewer/ui/pages/home.dart';
+import 'package:njord/ui/pages/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,14 +41,14 @@ class MainApp extends StatelessWidget {
             keyColors: const FlexKeyColors(),
             splashFactory: InkSparkle.splashFactory,
             subThemesData: const FlexSubThemesData(interactionEffects: true),
-            fontFamily: 'MiSans',
+            // fontFamily: 'MiSans',
           ),
           darkTheme: FlexThemeData.dark(
             colors: materialFlexScheme.dark,
             keyColors: const FlexKeyColors(),
             splashFactory: InkSparkle.splashFactory,
             subThemesData: const FlexSubThemesData(interactionEffects: true),
-            fontFamily: 'MiSans',
+            // fontFamily: 'MiSans',
           ),
           themeMode: ThemeMode.system,
           home: Home(),

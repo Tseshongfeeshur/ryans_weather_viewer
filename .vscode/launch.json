@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ryans_weather_viewer",
+            "name": "njord",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "ryans_weather_viewer (profile mode)",
+            "name": "njord (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "ryans_weather_viewer (release mode)",
+            "name": "njord (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

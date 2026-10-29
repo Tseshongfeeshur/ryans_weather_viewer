@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:njord/ui/pages/settings/temperature.dart';
 
 // 内边距
 final double horizontalPadding = 8;
@@ -101,7 +102,12 @@ class Settings extends StatelessWidget {
                 title: '温度',
                 subtitle: '摄氏度',
                 onTap: () {
-                  // TODO: 进入对应页面
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => TemperatureSetting(),
+                    ),
+                  );
                 },
               ),
               SettingItem(

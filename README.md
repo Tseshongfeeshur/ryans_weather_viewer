@@ -1,3 +1,3 @@
-# ryans_weather_viewer
+# Njord
 
-A new Flutter project.
+A wonderful weather viewer.

@@ -29,6 +29,6 @@
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
 		<key>NSLocationUsageDescription</key>
-		<string>“Ryan's Weather Viewer”需要您的获取位置权限以显示您所在地的天气。</string>
+		<string>“Njord”需要您的获取位置权限以显示您所在地的天气。</string>
 	</dict>
 </plist>

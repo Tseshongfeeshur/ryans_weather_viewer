@@ -1,6 +1,6 @@
 {
-    "name": "ryans_weather_viewer",
-    "short_name": "ryans_weather_viewer",
+    "name": "njord",
+    "short_name": "njord",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

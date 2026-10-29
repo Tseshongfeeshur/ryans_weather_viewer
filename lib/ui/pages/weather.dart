@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 // 工具
-import 'package:ryans_weather_viewer/ui/utils/get_date_from_period.dart';
+import 'package:njord/ui/utils/get_date_from_period.dart';
 
 // 插件
 import 'package:reorderable_staggered_scroll_view/reorderable_staggered_scroll_view.dart';

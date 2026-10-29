@@ -2,16 +2,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 // 工具
-import 'package:ryans_weather_viewer/ui/utils/get_weather_desc.dart';
-import 'package:ryans_weather_viewer/ui/utils/get_weather_icon.dart';
-import 'package:ryans_weather_viewer/data/location.dart';
+import 'package:njord/ui/utils/get_weather_desc.dart';
+import 'package:njord/ui/utils/get_weather_icon.dart';
+import 'package:njord/permission/location.dart';
 import 'package:geolocator/geolocator.dart';
 
 // 页面
-import 'package:ryans_weather_viewer/ui/pages/settings.dart';
-import 'package:ryans_weather_viewer/ui/pages/search.dart';
-import 'package:ryans_weather_viewer/ui/pages/weather.dart';
-import 'package:ryans_weather_viewer/ui/test/color_scheme.dart';
+import 'package:njord/ui/pages/settings.dart';
+import 'package:njord/ui/pages/search.dart';
+import 'package:njord/ui/pages/weather.dart';
+import 'package:njord/ui/test/color_scheme.dart';
 
 /// 一单位 天气 的数据结构
 class _WeatherData {
@@ -547,12 +547,8 @@ class _HomeState extends State<Home> {
                 ),
               );
             },
-            onReorder: (oldIndex, newIndex) {
+            onReorderItem: (oldIndex, newIndex) {
               setState(() {
-                // 如果往后拖，newIndex 会多算一个位移
-                if (oldIndex < newIndex) {
-                  newIndex -= 1;
-                }
                 // 先移除再插入
                 final _WeatherCardInfo item = _dataList.removeAt(oldIndex);
                 _dataList.insert(newIndex, item);
